@@ -1,0 +1,205 @@
+You are continuing unTR@PPED Yeppoon V2.
+
+Task:
+Implement Stage 2C-4 data entry ONLY for the first real partially assessed venue: Keppel Bay Plaza.
+
+Do not add backend, API, database, auth, admin, maps, localStorage/sessionStorage, external calls, community submissions, or photo display.
+
+Do not redesign the app.
+
+Do not add new scoring systems.
+
+Do not add numerical accessibility scores.
+
+Do not make blanket accessibility claims.
+
+Do not say “Keppel Bay Plaza is accessible.”
+
+Do not say “fully accessible.”
+
+Do not claim Australian Standards compliance.
+
+Preserve the existing three result levels only:
+- ✅ Works / Likely works
+- ⚠️ Check before you go
+- ❌ No / Likely will not work
+
+Context:
+This is a cautious selected-route field assessment, not a whole-shopping-centre audit.
+
+Venue:
+Keppel Bay Plaza
+64/76 James Street, Yeppoon
+
+Assessment status:
+Change Keppel Bay Plaza from:
+accessibilityAssessmentStatus: "not_assessed"
+to:
+accessibilityAssessmentStatus: "partially_assessed"
+
+Assessment metadata:
+- assessmentDate: "2026-05-03"
+- assessmentTime: "12:22"
+- assessor: "Michael Page"
+- weather: "Sunny / partly cloudy"
+- toolsUsed:
+  - "iPhone camera"
+  - "measuring tape"
+  - "iPhone Measure app for supporting approximate incline only"
+
+Assessment scope:
+Selected route only:
+accessible parking bay on east side of shopping centre
+→ main centre entrance between Queen Street and James Street side
+→ internal route to accessible toilet
+→ internal route to Coles Supermarket entrance/front area
+→ return to same accessible parking bay by same route.
+
+Important disclaimer text:
+“This assessment covers one selected route only. It is not a whole-centre accessibility audit. Conditions may change. Unknown or unobserved features are not treated as accessible.”
+
+Data entry rules:
+- Only enter directly observed or tape-measured facts listed below.
+- Leave unrelated/unobserved fields null.
+- Do not infer missing values from photos.
+- Do not infer accessibility from the venue name, public listings, or photos.
+- Do not enter estimated values as confirmed measurements.
+- Keep notes separate from decision-engine fields where appropriate.
+
+Parking data:
+- Accessible parking bay observed: yes
+- Number of accessible bays observed in selected area: 1
+- Parking bay location: east side of shopping centre, on selected route to main centre entrance
+- Bay width: 2.5 m, tape measured
+- Side access reserve / access space: 2.5 m, tape measured
+- Surface types observed:
+  - car park: concrete
+  - side access reserve: bitumen
+  - pathway: outdoor ceramic tiles
+- Surface condition: flat/even, no potholes or deformities observed at time of visit
+- Kerb from bay/access area to path: none observed; route was flat/step-free
+- Distance from selected bay to entrance: 10 m, tape measured
+- Time limit: no time limit sign observed
+- Obstructions: none observed at time of visit
+
+Pathway data:
+- Selected pathway surface: outdoor ceramic tiles
+- Pathway condition: good/excellent condition observed
+- Pathway width: 2.4 m, tape measured
+- Obstacles: none observed on selected path segment at time of visit
+- Kerb ramps: none required on selected route
+- Crossings: none on selected route
+- Weather cover: awning observed over part of route / entrance approach
+- Wet-weather caution note only:
+  “Wet slip resistance was not tested during this visit.”
+
+Entrance data:
+- Selected entrance: main centre entrance on selected route
+- Step-free: yes, step-free observed
+- Door type: automatic dual sliding door
+- Door clear opening width: 1.9 m, tape measured
+- Door force/heavy door: not applicable; automatic sliding door
+- Intercom: none observed
+- Entrance mat: rubber moisture mat observed inside entrance
+- Incline caution note only:
+  “A slight incline was observed at the entrance. iPhone Measure indicated approximately 2 degrees. This was not treated as a formal slope measurement.”
+
+Interior route data:
+- Route from main entrance toward toilet and Coles Supermarket was observed as part of selected route.
+- Floor surface: indoor ceramic tiles
+- Level changes: none observed on selected route
+- General movement space: wide/spacious circulation observed
+- Obstacles: some digital signage / retail displays observed, but clear route remained available at time of visit
+- Minimum clear passage around observed obstruction on selected route: 2.1 m, tape measured
+- Walkway width where measured: 5 m, tape measured
+- Wet-weather caution:
+  “Wet slip resistance was not tested. Some tiled surfaces may require caution when wet.”
+
+Accessible toilet data:
+- Dedicated accessible toilet found: yes
+- Clear signage observed: yes
+- Step-free path to toilet: yes
+- Internal hallway to amenities observed
+- MLAK required: no; toilet was unlocked/available via push-button automatic door at time of visit
+- Door type: automatic sliding door with push-button control
+- Occupancy indicator: red/green indicator light observed
+- Internal lock/control: push-button control observed inside toilet
+- Braille signage: observed on signage
+- Door width: 100 cm, tape measured
+- Grab rails: two grab rails observed
+- Turning space: minimum 2 m diameter, tape measured; larger in some areas
+- Basin reachable: yes, open space below basin observed
+- Mirror: observed
+- Shelf: observed
+- Hook: observed
+- Tap: lever-style handle observed
+- Automatic hand dryer: observed
+- Soap dispenser: observed
+
+Accessible toilet measured fixture details:
+- Shelf: 12 cm deep, 30 cm wide, 100 cm high from floor
+- Hooks: one at 126 cm from floor, another at 133 cm from floor
+- Tap handle: 20 cm long
+- Sink/basin height: 56 cm from floor with open space below
+- Right-side rail: 100 cm long; vertical part 62 cm high; positioned 22 cm from toilet bowl edge
+- Rear/left rail near cistern: 60 cm long; 65 cm from front edge of toilet bowl
+- Automatic hand dryer height: 110 cm from floor
+- Soap dispenser: 35 cm from edge of sink
+
+Selected shop endpoint:
+- Selected shop endpoint: Coles Supermarket entrance/front area
+- Do not assess Coles interior.
+- Do not make claims about all shops in the centre.
+- Use cautious wording:
+  “The selected route continued to the Coles Supermarket entrance/front area. This does not assess the Coles interior or other tenancies.”
+
+Return route:
+- Same as outbound route
+- No different return hazards observed
+- No time limit concern observed
+- Temporary hazards: no blocking temporary hazards observed at time of visit
+
+Do not enter ambulant toilet data into the wheelchair decision logic.
+Keep ambulant toilet notes out of the MVP decision engine unless there is already a separate notes-only field. If there is no safe place for them, do not add them.
+
+Expected user-facing result:
+For wheelchair profile, selected route only:
+✅ Likely works
+
+Explanation should mention:
+- selected accessible parking bay observed
+- step-free route from bay to entrance
+- automatic entrance door
+- wide internal circulation on selected route
+- dedicated accessible toilet found
+- automatic toilet door
+- minimum 2 m turning space observed in accessible toilet
+- return route same as outbound
+
+Cautions should mention:
+- selected route only, not whole-centre audit
+- conditions may change
+- wet slip resistance not tested
+- some displays/signage may move or change
+- incline was approximate using iPhone Measure only
+- Coles interior was not assessed
+
+Files likely to modify:
+- artifacts/untrapped-v2/src/data/venues.ts
+- any existing types file if required by current schema
+- any existing UI copy/disclaimer file only if needed to display the partial-assessment caution correctly
+
+Do not create unnecessary new architecture.
+
+Do not add photos to the app.
+
+After changes:
+- Run typecheck.
+- Run build.
+- Report exactly:
+  1. files changed
+  2. data fields added
+  3. fields intentionally left null
+  4. safeguards preserved
+  5. typecheck result
+  6. build result
