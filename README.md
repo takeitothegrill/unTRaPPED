@@ -1,86 +1,41 @@
-# unTR@PPED Yeppoon V2
+# unTR@PPED — repository split (V2 active / V3 parked)
 
-**Status: Stage 0 — Planning Only**
+This repository holds the local development workspace for the **unTR@PPED**
+accessibility project (Yeppoon / Emu Park, Capricorn Coast, Queensland).
 
-No app implementation has started. No React scaffold. No database. No API routes. No frontend components.
+It is deliberately split into two sibling folders:
 
----
-# unTR@PPED
+| Folder | Version | Status | What it is |
+|--------|---------|--------|------------|
+| [`untrapped v2/`](untrapped%20v2/) | **V2** | **Active** | Current direction. A **Google My Maps**-based map. **No downloadable app.** **Owner-only** pin creation (Michael curates every pin). Framed around **lived experience** — what a real wheelchair/mobility-device user encounters on the ground — **not** building-code / standards compliance. |
+| [`untrapped v3/`](untrapped%20v3/) | **V3** | **Parked** | The previous, more advanced concept: a custom whole-outing planner built on a **strict measurement / building-code assessment model** (deterministic compliance scoring against standards). Deferred, **not deleted** — preserved intact for a possible future V3. |
 
-This project is branded as **unTR@PPED**.
+## Why the split
 
-The GitHub repository and local development folder use **unTRaPPED** because `@` can create avoidable issues in URLs, scripts, and development tooling.
+The work formerly labelled "V2" inside this repo (the strict measurement /
+building-code assessment model) has been **renamed V3 and parked**. It is an
+advanced version that is not the current priority.
 
----
+A **new V2** takes over as the active line of work with a deliberately smaller
+surface:
 
-## What is unTR@PPED?
+- **Google Maps (My Maps), not a bespoke app** — no build, no backend, no app store.
+- **Owner-only pins** — the map is a curated, single-author evidence base, not
+  a community-editable dataset.
+- **Lived experience over compliance** — pins describe what actually happens
+  when you try to get there, get in, and use it — plainly, without pretending
+  to certify against building codes.
 
-unTR@PPED is a wheelchair accessibility planning tool for Yeppoon, Queensland, Australia.
+The building-code / compliance model is **deferred, not abandoned**. All of its
+planning and artifacts remain under `untrapped v3/`.
 
-The name is an acronym:
+## Notes
 
-| Letter | Meaning |
-|--------|---------|
-| T | Toilets |
-| R | Ramps |
-| @ | Accessibility (the @ replaces the A and is part of the brand identity) |
-| P | Pathway |
-| P | Parking |
-| E | Entrances |
-| D | Doors |
-
----
-
-## This Repo vs the MVP
-
-This is V2 — a **separate repo** from the submitted MVP.
-
-The MVP is **frozen**. Do not modify it, continue it, or copy from it without explicit instruction.
-
-V2 starts fresh from this planning stage. The MVP serves as reference material only.
-
----
-
-## V2 Direction
-
-V2 moves from a "venue accessibility checker" to a **whole-outing accessibility planner**.
-
-The core question V2 is designed to answer:
-
-> "Can I get there, get in, and use it — without surprises?"
-
----
-
-## Planning Documents
-
-All canonical planning lives in `/docs`:
-
-| File | Purpose |
-|------|---------|
-| `docs/V2_PRODUCT_SPEC.md` | Vision, problem, scope, principles |
-| `docs/V2_WHOLE_OUTING_MODEL.md` | How a whole outing is modelled |
-| `docs/V2_DATA_MODEL_DRAFT.md` | Draft data structures (pseudocode only) |
-| `docs/V2_DECISION_ENGINE_DESIGN.md` | How the decision engine should evolve |
-| `docs/V2_ROADMAP.md` | Staged build plan |
-| `docs/V2_RESEARCH_QUESTIONS.md` | Open questions to resolve before building |
-| `docs/V2_REPLIT_PROMPTS.md` | Prompts for resuming work in Replit Agent |
-| `docs/REFERENCE_INDEX.md` | Index of all reference material |
-
----
-
-## Primary User
-
-Wheelchair users in Yeppoon, Queensland, Australia.
-
----
-
-## Key Principles
-
-- Do not overclaim accessibility.
-- Three result levels only: ✅ Works / Likely works — ⚠️ Check before you go — ❌ No / Likely will not work.
-- No numerical accessibility scores.
-- Unknown data creates caution, not fake confidence.
-- Old data reduces confidence.
-- Community-submitted data is not treated as verified until reviewed.
-- Logic must be deterministic and explainable.
-- Mobile-first design.
+- Git history for every file under `untrapped v3/` is preserved — the contents
+  were moved with `git mv`, so `git log --follow` still works.
+- `untrapped v3/` is a self-contained pnpm/Replit workspace. Its Replit and
+  workspace configs (`.replit`, `pnpm-workspace.yaml`, etc.) now live one level
+  down; see that folder's own README and the parent split note before trying to
+  build or deploy it.
+- This split is organisational only. It does **not** touch the separate,
+  live campaign website (`untrapped-site`) or its public Google My Map.
