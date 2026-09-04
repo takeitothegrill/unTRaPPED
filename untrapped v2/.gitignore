@@ -1,3 +1,12 @@
 # Throwaway feasibility-test working files (scripts, sample CSVs, converted photos).
 # Not part of the V2 build; kept locally for reference while testing the pipeline shape.
 pipeline-test-artifacts/
+
+# Real photos: raw human uploads and the script's processed output.
+# Never commit actual location photos to the repo.
+incoming/
+processed/
+
+# Python
+__pycache__/
+*.pyc
