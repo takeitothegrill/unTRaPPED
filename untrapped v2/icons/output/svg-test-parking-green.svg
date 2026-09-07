@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <!-- SVG acceptance test for Google My Maps custom icons.
+       Drawn to the agreed spec: blue pin, white P, green rating dot, no slash. -->
+  <path d="M120 8
+           C 63 8 18 52 18 106
+           C 18 150 60 186 112 232
+           a 11 11 0 0 0 16 0
+           C 180 186 222 150 222 106
+           C 222 52 177 8 120 8 Z"
+        fill="#1565D8"/>
+  <text x="112" y="150"
+        font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="132"
+        fill="#FFFFFF" text-anchor="middle">P</text>
+  <circle cx="184" cy="52" r="40" fill="#228B3C" stroke="#FFFFFF" stroke-width="10"/>
+</svg>
