@@ -30,6 +30,7 @@ import io
 import os
 import shutil
 import sys
+import zipfile
 from datetime import datetime
 from pathlib import Path
 
@@ -75,6 +76,38 @@ def save_locations(rows, fieldnames):
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
+
+
+def extract_zips_in_place(folder: Path):
+    """iCloud's web export usually arrives as a .zip (often containing one
+    'iCloud Photos' subfolder). Extract any .zip sitting directly in the
+    location's incoming folder, flatten a single wrapping subfolder if
+    present, then rename the zip so it's never re-extracted or picked up
+    as a stray file on a later run."""
+    for zpath in sorted(folder.glob("*.zip")):
+        print(f"    found {zpath.name} — extracting")
+        try:
+            with zipfile.ZipFile(zpath) as zf:
+                zf.extractall(folder)
+        except zipfile.BadZipFile:
+            print(f"    WARNING: {zpath.name} is not a valid zip — skipping")
+            continue
+
+        # Flatten a single top-level subfolder (e.g. "iCloud Photos/") into
+        # the location folder itself, so photos always end up directly in
+        # incoming/<location_id>/.
+        entries = [p for p in folder.iterdir() if p != zpath]
+        subdirs = [p for p in entries if p.is_dir()]
+        if len(subdirs) == 1 and not any(p.is_file() and p.suffix.lower() in RASTER_EXTS | VIDEO_EXTS for p in entries):
+            for child in list(subdirs[0].iterdir()):
+                dst = folder / child.name
+                if dst.exists():
+                    print(f"    WARNING: {child.name} already exists, keeping extracted copy, skipping duplicate")
+                    continue
+                shutil.move(str(child), str(dst))
+            subdirs[0].rmdir()
+
+        zpath.rename(zpath.with_suffix(".zip.extracted"))
 
 
 def list_photo_files(folder: Path):
@@ -220,6 +253,8 @@ def process_location(row):
         return None  # nothing to do — no incoming folder for this row
 
     print(f"\n[{loc_id}] {row.get('name', '')}")
+
+    extract_zips_in_place(folder)
 
     cat_id, cat_name = normalize_category(row.get("category"))
     if cat_id is None:

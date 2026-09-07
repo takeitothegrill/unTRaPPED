@@ -18,6 +18,10 @@ For UPDATE rows, diffs the current processed/<location_id>/ file list
 against the synced_photos column to report which photos are newly added
 (need attaching) and which were removed (need removing from the pin).
 
+This script NEVER writes to locations.csv. Marking a row done -- setting
+status=done and filling synced_photos -- is a manual edit, RUNBOOK.md step 6.
+Earlier docs claimed a script did it; none ever has.
+
 Usage:
     python plan_sync.py
 """
@@ -25,11 +29,18 @@ import csv
 import sys
 from pathlib import Path
 
-from categories import normalize_category, normalize_rating
+from categories import normalize_category, normalize_rating, icon_key
 
 ROOT = Path(__file__).resolve().parent.parent
 LOCATIONS_CSV = ROOT / "locations.csv"
 PROCESSED_DIR = ROOT / "processed"
+MERGE_CSV = ROOT / "merge.csv"
+
+# Columns written to merge.csv. latitude/longitude are deliberately ABSENT and
+# must stay absent: including them in a "Reimport and merge" destroyed every
+# pin on the test map (see pipeline-test-artifacts/STATUS.md). This tuple is
+# the enforcement point -- do not add them here.
+MERGE_COLUMNS = ("location_id", "name", "description", "category", "rating", "icon")
 
 
 def load_locations():
@@ -76,6 +87,7 @@ def plan():
             "rating": rating or row.get("rating"),
             "latitude": row["latitude"],
             "longitude": row["longitude"],
+            "icon": icon_key(row.get("category"), row.get("rating")),
             "hero_photo": photos[0],
             "extra_photos": photos[1:],
             "all_photos": photos,
@@ -100,6 +112,7 @@ def print_plan(new_work, update_work, skipped, blocked):
         print(f"\n  [{item['location_id']}]")
         print(f"    name: {item['name']}")
         print(f"    category: {item['category_name']} (id {item['category_id']})   rating: {item['rating']}")
+        print(f"    map icon: {item['icon']}")
         print(f"    position: {item['latitude']}, {item['longitude']}")
         print(f"    hero photo (Pass 1, creates the pin): {item['hero_photo']}")
         if item["extra_photos"]:
@@ -126,6 +139,69 @@ def print_plan(new_work, update_work, skipped, blocked):
     print("\nTo execute this plan, see pipeline/RUNBOOK.md.")
 
 
+def _only_arg():
+    """Return the value of --only <location_id>, or None."""
+    if "--only" not in sys.argv:
+        return None
+    i = sys.argv.index("--only")
+    if i + 1 >= len(sys.argv):
+        print("ERROR: --only needs a location_id")
+        sys.exit(1)
+    return sys.argv[i + 1]
+
+
+def write_merge_csv(new_work, update_work, only=None):
+    """Write the CSV used by My Maps' Reimport and merge step.
+
+    Covers NEW and UPDATE rows together -- merging is keyed on location_id, so
+    a row that is already on the map is simply updated in place.
+    """
+    rows = new_work + update_work
+    if only:
+        rows = [r for r in rows if r["location_id"] == only]
+        if not rows:
+            print(f"ERROR: --only {only!r} matched no NEW or UPDATE row.")
+            sys.exit(1)
+    if not rows:
+        print("\nNothing to merge — merge.csv not written.")
+        return
+
+    missing = [r["location_id"] for r in rows if not r["icon"]]
+    if missing:
+        print("\nERROR: these rows have an unrecognised category/rating, so no "
+              "icon could be chosen. Fix locations.csv first:")
+        for loc_id in missing:
+            print(f"  [{loc_id}]")
+        sys.exit(1)
+
+    assert "latitude" not in MERGE_COLUMNS and "longitude" not in MERGE_COLUMNS,         "merge.csv must never carry coordinates — it wipes the pins"
+
+    with open(MERGE_CSV, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=list(MERGE_COLUMNS))
+        w.writeheader()
+        for item in rows:
+            w.writerow({
+                "location_id": item["location_id"],
+                "name": item["name"],
+                "description": item["description"],
+                "category": item["category_name"],
+                "rating": item["rating"],
+                "icon": item["icon"],
+            })
+
+    icons = sorted({r["icon"] for r in rows})
+    print(f"\nWrote {MERGE_CSV} — {len(rows)} rows, no coordinates.")
+    print("  NOTE: rows whose location_id is not already a pin on the map are")
+    print("  silently ignored by the merge — no error, no warning. Use --only")
+    print("  <location_id> to scope this file when that ambiguity matters.")
+    print(f"  style the layer by the 'icon' column (Categories mode). "
+          f"Values present: {', '.join(icons)}")
+
+
 if __name__ == "__main__":
-    n, u, s, b = plan()
-    print_plan(n, u, s, b)
+    n, u, sk, b = plan()
+    print_plan(n, u, sk, b)
+    if "--write-merge-csv" in sys.argv:
+        write_merge_csv(n, u, only=_only_arg())
+    else:
+        print("\nRe-run with --write-merge-csv to generate merge.csv.")
