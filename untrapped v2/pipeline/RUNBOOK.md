@@ -343,9 +343,14 @@ Tested three ways (drag tool, hover-then-drag, synthetic mousedown/mousemove/
 mouseup on the marker) — all three **pan the map** and leave the pin's
 coordinates unchanged.
 
-**Untested: the gesture a human uses** (VERIFIED #26, 13 Sep). Click "Open in
+**Not settled: the gesture a human uses** (VERIFIED #26, 13 Sep). Click "Open in
 My Maps", double-click the marker, keep the mouse held down on the second click,
-then drag. None of the three methods above was that gesture.
+then drag.
+- None of the three methods above was that gesture, and all three came before
+  the lag lesson (VERIFIED #27).
+- The human recalls an agent drag later being tested and passing, but no record
+  of it has been found.
+- It is a to-do in `VERIFIED.md`.
 
 So: if the override differs from the hero photo's EXIF by **more than ~25 m**,
 **stop and flag it for a human**, rather than silently shipping a misplaced pin.

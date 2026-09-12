@@ -57,10 +57,18 @@ Short list. Do not add to it speculatively.
   worth a click to confirm. **Go by behaviour:** the option that updates
   existing rows by matching a key, NOT the one that appends. Whoever opens that
   menu next: read the real label and settle line this.
-- Whether an **agent** can move a pin with the human's double-click-and-hold gesture
-  (#26). None of the three methods behind #2 was that gesture. Those attempts (6 Sep,
-  about 00:58 AEST) were also made before the lag lesson (#27), so they may have been
-  checked too soon.
+- **TO DO, next session: can an agent move a pin?**
+  - **The human's recollection (13 Sep):** it was tested and passed. They do not recall
+    when or where.
+  - **No record has been found.** Searched: this project's Claude Code transcripts, the
+    desktop and Cowork sessions (archived included), and Open Brain. Every record found
+    says an agent cannot (#2).
+  - **First, look for the record**, for example in Claude.ai chats or the Chrome sidebar.
+  - **If none turns up, run the test** on a throwaway map, registered first. Wait 5–8 s
+    between steps (#27) and try the human's double-click-and-hold gesture (#26).
+  - The three methods behind #2 (6 Sep, about 00:58 AEST) came before the lag lesson, and
+    none used that gesture.
+  - Until this is settled, do not cite #2 as final.
 
 ## Why this file exists
 
