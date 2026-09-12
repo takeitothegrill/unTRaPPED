@@ -29,9 +29,9 @@ spending any:
 Result: 4 feature layers + 2 town locators = **6 layers**, leaving 4 spare for
 more towns.
 
-⚠ Remember the legend order is INVERTED against the map's z-order — the layer at
-the BOTTOM of the list draws on TOP of the map. Decide which matters more before
-you settle the order.
+⚠ The legend order may be INVERTED against the map's z-order. Observed once on v7
+(the layer at the BOTTOM of the list drew on TOP of the map), never deliberately
+tested. Decide which matters more before you settle the order.
 
 ---
 

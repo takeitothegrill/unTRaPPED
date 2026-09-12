@@ -32,9 +32,12 @@ Picking this up cold? Read `pipeline/RUNBOOK.md` first, then
 
 ## Decisions made
 
-- **CSV is now the source of truth for coordinates.** Pins cannot be dragged
-  from an automated session, so positions come from importing a CSV that
-  carries lat/long — NOT from photo EXIF. This is a change of approach.
+- **On Path B (CSV import) the CSV is the source of truth for coordinates.**
+  Pins cannot be dragged from an automated session, so on a map built by CSV
+  import positions come from the CSV's lat/long — NOT from photo EXIF. On Path A
+  (Photos-Albums import, the only route to a native photo) the pin is placed
+  from EXIF and the CSV coordinate does not reach the map. This is a change of
+  approach.
 - **Four layers, individual styles** — never "Group places by", which collapses
   the per-pin legend into style groups.
 - **Split by LGA**, not township. Layers are by type, so one map holds every
@@ -109,7 +112,9 @@ name is long.
 
 - **The layer cap IS 10.** Tested by adding layers to v7 until refused: it
   stops at 10 and **fails SILENTLY — no error, no message**. You just notice
-  nothing happened. So `7 town layers + 4 feature layers = 11` is NOT possible.
+  nothing happened. So the planned `7 town layers + 4 feature layers = 11`
+  (towns: Yeppoon, Emu Park, Keppel Sands, Byfield, Cawarral, Great Keppel
+  Island, Cedar Park) is NOT possible. OPEN in canon: `untrapped-processes.md` P8.
 - **My Maps is very laggy — allow 5-8 seconds per interaction.** Several
   "failed" clicks in earlier sessions had in fact registered; the checks were
   racing the UI. If a click seems not to work, WAIT before retrying, or you will
@@ -121,9 +126,9 @@ name is long.
   currently the system of record.
 - **Photos export as a plain data column**, `gx_media_links`, holding
   space-separated `https://mymaps.usercontent.google.com/hostedimage/...` URLs.
-  This means photo attachments are portable DATA, not locked to the map — if
-  that column re-imports, photos can be carried to a rebuilt map without
-  re-attaching anything by hand.
+  **Photos are not portable.** Re-importing the column gives plain text, not
+  photos, and the URLs are session-scoped and dead outside the editing session
+  (VERIFIED #12). Only `Copy map` carries photos to another map.
 - **KML for any map** can be downloaded from
   `https://www.google.com/maps/d/kml?mid=<MID>&forcekml=1` — no UI needed, and
   it avoids opening the production map's ⋮ menu (which contains Move to Bin).
@@ -133,10 +138,6 @@ name is long.
 
 ## OPEN — untested
 
-- **Is the layer cap really 10?** Not verified. Planned structure is 7 town
-  layers (Yeppoon, Emu Park, Keppel Sands, Byfield, Cawarral, Great Keppel
-  Island, Cedar Park) + 4 feature layers = **11**, which would exceed it.
-  Test by adding layers until refused.
 - **Z-order.** Observed on v7: layer order is Parking, Toilets, Routes, Venues,
   and the green Route icon draws OVER the blue Parking icon where they are ~6 m
   apart. That implies **later layers draw on top**, i.e. legend order and z-order
@@ -182,9 +183,13 @@ exported image URLs are session-scoped and dead outside the editing session.
 - To push CSV text changes onto an existing map, use **Reimport and merge**
   matching `location_id` = `location_id`, with **no lat/long columns**.
 - **Never delete a pin that has photos.** Move it, rename it, re-rate it.
-- Before and after any batch edit, check the photo count:
+- Before and after any batch edit, check both counts. `grep -c gx_media_links`
+  counts **pins carrying photos** (the tag appears once per pin), not photos:
   `curl -s "https://www.google.com/maps/d/kml?mid=<MID>&forcekml=1" | grep -c gx_media_links`
-  Working copy should read **70 pins carrying 253 photos**.
+  For the **photo count**, use the script in RUNBOOK.md ("Photos CANNOT be
+  moved between maps"), which splits each tag's URLs. Working copy: **70 pins
+  carrying 253 photos**. Its KML needs a signed-in session: an anonymous `curl`
+  gets a 403 and counts 0.
 
 ## Live layer names (must match `build_import.py` exactly)
 
@@ -200,15 +205,12 @@ Base map: Simple Atlas (set 2026-09-06).
 
 ## Open questions
 
-1. **Does the legend sort alphabetically, or by insertion order?** Unknown, and
-   it matters: the whole venue-type naming scheme assumes a user can scan for
-   "playground". Check this on v7 first.
-2. **Photos.** CSV-imported pins arrive empty. ~24 attachments would need
+1. **Photos.** CSV-imported pins arrive empty. ~24 attachments would need
    redoing on any rebuilt map. Not yet decided.
-3. **`status` is map-agnostic** — it records "synced" but not "synced to which
+2. **`status` is map-agnostic** — it records "synced" but not "synced to which
    map". Bit us once. Needs a `synced_map` column or one-map discipline.
-4. The lat/long override remains inert on the photo-import path; the CSV-import
-   path replaces it. Runbook still documents the old behaviour in step 2.
+3. The lat/long override does not reach the map on Path A (photo import); on
+   Path B (CSV import) the CSV coordinates are where the pin lands.
 
 ## Housekeeping
 
@@ -237,25 +239,37 @@ After the blank placemark was deleted on 2026-09-07: **87 `<Placemark>`**
 are three different numbers — 88 / 85 / 70 — and mixing them up is how the
 earlier "71 vs 70" confusion started.)
 
-The single-photo difference is fully accounted for, and NO pin was lost:
+The single-photo difference is fully accounted for. **`Copy map` lost nothing.**
+A KML read of the copy on 6 Sep measured 103 placemarks and 254 photos at 18:18,
+and still 254 photos at 18:24, after the human's layer deletions.
 
     PEDESTRIAN CROSSING - disabled [EXCELLENT]
         production  150.74666,-23.12873   1 photo
-        copy        150.74666,-23.12885   0 photos   (moved ~12m by hand)
+        copy        150.74666,-23.12885   0 photos
 
-The PIN survived and is staying. Its one PHOTO did not make it across. That is
-the whole of the 254 -> 253 gap; every other pin kept all of its photos.
+- **The original crossing pin was deleted.** It happened during the hand
+  restructure, between 18:24 and 21:31 on 6 Sep. Pins and photos each fell by
+  one at the same time.
+- **The agent re-created it at 22:32.** It imported
+  `import/_RECOVER_crossing.csv` at production's exact coordinates, with
+  `location_id` `pedestrian-crossing-recovered`. CSV import cannot carry photos
+  (VERIFIED #12), so the re-created pin has none.
+- **The human then moved it about 13 m** to its correct position. The
+  production pin had been in the wrong place (human, 13 Sep).
+
+That is the whole of the 254 -> 253 gap; every other pin kept all of its photos.
 
 Recovering it is manual only — My Maps regenerates photo URLs on copy and the
 hosted image needs an authenticated session. Either save the image from the
 production map and re-add it, or find the geotagged original in Google Photos.
 
-### The trap that caught me here
+### The trap here
 
-I first reported this pin as DELETED. It was not — it had been MOVED.
 Coordinates survive copying and renaming, which is why they are the right key
-for those, but they do NOT survive a manual move, and a moved pin is
-indistinguishable from a deleted one under a coordinate diff.
+for those. They do NOT survive a manual move, so a moved pin looks the same as
+a deleted one under a coordinate diff. And a pin re-created at the same spot
+looks the same as a surviving one. Check the session record before you explain
+a difference.
 
 There is no single reliable key. Cross-check at least two of {coordinates,
 name, photo count} and reconcile the totals before claiming anything was lost.

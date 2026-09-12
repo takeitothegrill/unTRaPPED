@@ -41,7 +41,7 @@ EXIF coordinates are discovered.
 | | Path A — photo import + merge | Path B — CSV import |
 |---|---|---|
 | Creates pins from | a Google Photos album | a CSV with lat/long columns |
-| Pin position | photo EXIF; **CSV override is ignored** | **exactly the CSV coordinates** |
+| Pin position | on Path A the pin sits at photo EXIF; the CSV lat/long **never reaches the map** | on Path B the pin sits on **exactly the CSV coordinates** |
 | Photos | attached automatically (hero) | none — must be attached by hand |
 | Pin naming | reverse-geocoded, must be renamed | taken from a CSV column |
 | Stale address card | yes, must be removed | **none — no geocoding happens** |
@@ -84,6 +84,20 @@ byte-exact coordinates, and the legend listed every pin individually.
 9. Assign each pin's icon individually (0c below). Every row carries an `icon`
    column naming the exact file.
 10. Publish and verify (section 7). No stale address card to remove.
+
+## Wait for My Maps before you check or retry
+
+**My Maps takes 3–5 seconds to respond to a click** (VERIFIED #27). Allow 5–8
+seconds before checking whether an interaction worked.
+
+- **Why agent clicks used to "fail":** the checks ran about 3 seconds after each
+  click, before the map had responded, so clicks that had registered were read
+  as failures.
+- **Why retrying is dangerous:** the retry lands too. v7 gained six empty layers
+  this way.
+- **What fixed it:** wait, then check, and never repeat a click that looks dead
+  until the wait is over. The human spotted the lag on 6 Sep; once the agent
+  waited, its clicks worked.
 
 ## The map tab MUST be the visible, active tab
 
@@ -316,16 +330,22 @@ only** (`processed/<location_id>/<first photo>.jpg`), click Done on the toast.
 coordinates are honoured exactly and none of the following is relevant — no
 25 m check, no halt, no repositioning problem.
 
-On Path A, if `locations.csv` carries a human lat/long override it is
-**inert**. Google
-places from EXIF, and `merge.csv` deliberately carries no coordinates.
-`process_locations.py` prints "using human-provided override position" for
-**every** row regardless — that message means nothing.
+On Path A, a human lat/long override in `locations.csv` **does not reach the
+map**. Google places the pin from EXIF, and `merge.csv` deliberately carries no
+coordinates. The override does govern the CSV: `process_locations.py` keeps it
+instead of back-filling from EXIF, and on Path B that CSV value is where the pin
+lands. The script prints "using human-provided override position" whenever both
+cells are filled, including values it back-filled itself on an earlier run, so
+that message tells you nothing about the map.
 
 **Repositioning a pin is not currently achievable from an automated session.**
 Tested three ways (drag tool, hover-then-drag, synthetic mousedown/mousemove/
 mouseup on the marker) — all three **pan the map** and leave the pin's
 coordinates unchanged.
+
+**Untested: the gesture a human uses** (VERIFIED #26, 13 Sep). Click "Open in
+My Maps", double-click the marker, keep the mouse held down on the second click,
+then drag. None of the three methods above was that gesture.
 
 So: if the override differs from the hero photo's EXIF by **more than ~25 m**,
 **stop and flag it for a human**, rather than silently shipping a misplaced pin.

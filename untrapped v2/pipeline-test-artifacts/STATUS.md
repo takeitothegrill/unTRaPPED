@@ -210,9 +210,12 @@ Root cause (sync timing, wrong export method, or something else) never isolated.
 
 **DECISION: not worth chasing further — use the CSV override instead.** Human may
 pre-fill `latitude`/`longitude` directly in the master CSV (e.g. by looking up the
-address on Google Maps) for any problem case (indoor shots, bad auto-GPS, etc.); the
-script only pulls from the photo's own EXIF when those cells are left blank on a new row.
-Reliable, human-controlled, no dependency on unverified phone-app/export behaviour.
+address on Google Maps) for any problem case (indoor shots, bad auto-GPS, etc.).
+**In `process_locations.py` the override works:** the script keeps the human's value in
+the CSV and only pulls from the photo's own EXIF when those cells are left blank on a new
+row. That governs the CSV value only. **On Path B (CSV import) the CSV value is where the
+pin lands; on Path A (Photos-Albums import) it does not reach the map** — see the
+fresh-agent runbook test below.
 
 **Master CSV** (not a per-folder .txt file — this supersedes that earlier idea) is the
 single source of truth for what's on the map:
@@ -618,14 +621,15 @@ found **19 runbook defects**, several serious. The runbook has been rewritten.
   the CSV `name`, destroying the `name = location_id` match key. Every later
   merge must match `location_id = location_id` (the first merge adds that
   column). As written, a second sync would have matched zero rows.
-- **The stale "Details from Google Maps" card reaches the public.** After a
-  merge the editor balloon hides it, so it looks fixed — the viewer still shows
-  a wrong business address. Now step 7.
-- **The human lat/long override is inert.** Google places from EXIF and
-  merge.csv carries no coordinates, so the override column never reaches the
-  map, while `process_locations.py` still prints "using human-provided override
-  position". Harmless here (~20 m) but not for the indoor/bad-GPS case the
-  column exists for. Documented; not yet fixed in code.
+- **The stale "Details from Google Maps" card reaches the public** — the viewer
+  shows a wrong business address. Now step 7.
+- **On Path A (Photos-Albums import) the human lat/long override does not reach
+  the map.** Google places the pin from EXIF and merge.csv carries no
+  coordinates, so the override value in the CSV never reaches a Path A pin, while
+  `process_locations.py` still prints "using human-provided override position".
+  (The override does govern the CSV value; on Path B, CSV import, that value is
+  where the pin lands.) Harmless here (~20 m) but not for the indoor/bad-GPS case
+  the column exists for. Documented; not yet fixed in code.
 - **`file_upload` is not one-file-per-call.** The inputs are `multiple=true`;
   12 icons went in one call. The real rule is 10 MB per call. The old wording
   cost ~12 needless round-trips.
@@ -709,7 +713,7 @@ background agent, batched: one album import creating 5 pins, 5 renames, ONE merg
 carrying all 5 rows, then styling and per-location photo attachment.
 
 **Independently verified from the published KML** (not taken on the agent's word):
-6 placemarks, every `location_id` paired with the correct icon and coordinate,
+6 placemarks, every `location_id` paired with the correct coordinate,
 0 "Details from Google Maps" cards remaining. `plan_sync.py` reports 0 NEW /
 0 UPDATE; all 8 rows `done`.
 
@@ -741,7 +745,8 @@ stop for this"* — having actually run it for only one location. Re-run afterwa
 Both exceed the 25 m threshold the runbook says must halt for a human — a
 safeguard I had written hours earlier and then personally overrode with an
 unverified assurance. Neither pin is *wrong* (they sit where the photos were
-taken; the override is inert by design) but the halt should have fired. The
+taken; on Path A the override does not reach the map, by design) but the halt
+should have fired. The
 runbook now says explicitly: re-run the check even when handed the result.
 
 **New runbook findings from this run:**
@@ -762,19 +767,17 @@ runbook now says explicitly: re-run the check even when handed the result.
   `edit?mid=...&ll=<lat>,<lng>&z=19` to bring one to map centre.
 - **KML export is the best whole-map verifier**:
   `maps/d/kml?mid=<MID>&forcekml=1&cb=<ts>` — name, coordinates and every merged
-  Data column in one read-only fetch. Cached; always cache-bust.
+  Data column in one read-only fetch. It is cached, and a cache-buster is **not
+  enough**: a deleted placemark was still reported about a minute later despite
+  both `cache:'reload'` and a cache-buster (VERIFIED #20). For anything just
+  changed, trust the DOM.
 
 Cost: 308 tool calls, ~95 minutes.
 
 ## Remaining open items after Pass 2 is resolved
 
-- TEST 2's discrete-vs-range styling bug (see above).
 - TEST 2's reimport-merge style-inheritance question (`csv/untrapped-mymaps-addmore.csv`
   ready to use).
-- The bare-image-URL-in-description-balloon fallback test — **not attempted at all yet.**
-  (Does a plain image URL typed into a `description` column render inline or just
-  linkify as clickable text in the info balloon? This is the cheap fallback if Pass 2
-  turns out not to reliably preserve photos.)
 
 ## Environment notes
 
