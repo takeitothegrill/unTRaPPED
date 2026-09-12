@@ -1,5 +1,10 @@
 # unTRaPPED V2 — handover, 2026-09-06
 
+> **2026-09-12: this is a working record, not canon.** Project state, the full map
+> register (incl. v4 `1Gt4Y0lCkLbi7DVXk0IJIOw_tmFX0U4k`, never recorded here), the pin
+> spec and the process description are in `my-brain-context/projects/untrapped*.md`.
+> Where this file and canon disagree on state or decisions, canon wins.
+
 > **READ `VERIFIED.md` FIRST.** It lists what has already been PROVEN on this
 > project. Never ask the human to re-test anything on that list. If this
 > document contradicts it, VERIFIED.md wins.
@@ -215,8 +220,12 @@ Base map: Simple Atlas (set 2026-09-06).
 
 ## Photo reconciliation, copy vs production (checked 2026-09-07)
 
-PRODUCTION `1mOXyoupEm3Pc8QmL-Yvrxrqt9eIsG48` — 100 placemarks, 71 pins with
+PRODUCTION `1mOXyoupEm3Pc8QmL-Yvrxrqt9eIsG48` — ~~100~~ **103** placemarks, 71 pins with
 photos, **254 photos**. Untouched.
+*(Corrected 2026-09-12: "100" was a transcription slip — the measurement taken seconds
+earlier read 103, and both the 6 Sep export and the 12 Sep live KML read 103 = 95 points
++ 3 polygons + 4 lines + 1 geometry-less. Detail: my-brain-context
+`projects/untrapped.md`, 2026-09-12 entry.)*
 
 WORKING COPY `1GsgVncG-IYRalSk_u7ZmuDQluhPQmpQ` — as measured that day:
 88 `<Placemark>` = 85 `<Point>` + 2 `<Polygon>` (the CBD boundaries) + 1

@@ -1,5 +1,15 @@
 # How to start an agent on this project
 
+> **Canon (2026-09-12):** project state, the map register, the pin spec and the
+> human-facing process description now live in `my-brain-context/projects/`
+> (`untrapped.md`, `untrapped-map-register.md`, `untrapped-pin-spec.md`,
+> `untrapped-processes.md`). Read `untrapped-processes.md` before starting either job.
+>
+> **The letters below are the reverse of the 12 Sep handoff's.** Here "Job A" = new
+> pins (canon calls it **intake**) and "Job B" = updating existing pins (canon calls it
+> **transfer**). Job B is **not runnable yet** — the map carries no `location_id` key;
+> see `untrapped-processes.md` §3.
+
 > **READ `VERIFIED.md` FIRST.** It lists what has already been PROVEN on this
 > project. Never ask the human to re-test anything on that list. If this
 > document contradicts it, VERIFIED.md wins.
