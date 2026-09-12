@@ -1,5 +1,10 @@
 # unTRaPPED V2 — sync runbook
 
+> **READ `VERIFIED.md` FIRST.** It lists what has already been PROVEN on this
+> project. Never ask the human to re-test anything on that list. If this
+> document contradicts it, VERIFIED.md wins.
+
+
 How to push `locations.csv` + `processed/` onto a Google My Map. There is no API
 for My Maps — this is a live Claude Code session driving the browser via
 Claude-in-Chrome.
@@ -137,7 +142,23 @@ duplicating its own internal references rather than resolving a URL.
 - **So: never delete a pin that has photos.** Move it, rename it, re-rate it —
   but do not delete it. Check the photo count before and after any batch of
   deletions:
-  `curl -s "https://www.google.com/maps/d/kml?mid=<MID>&forcekml=1" | grep -c gx_media_links`
+
+```js
+// pins carrying photos, AND the true photo count
+const txt = await fetch(`https://www.google.com/maps/d/kml?mid=<MID>&forcekml=1&cb=`+Date.now(),
+                        {cache:'reload'}).then(r=>r.text());
+const vals = [...txt.matchAll(/<Data name="gx_media_links">[\s\S]*?<value>([\s\S]*?)<\/value>/g)]
+  .map(m => m[1].replace(/<!\[CDATA\[|\]\]>/g,'').trim());
+({ pinsWithPhotos: vals.length,
+   photos: vals.reduce((n,v) => n + v.split(/\s+/).filter(Boolean).length, 0) })
+```
+
+⚠ **`grep -c gx_media_links` does NOT count photos.** That tag appears once per
+pin, with all of that pin's photo URLs inside a single `<value>`. Counting the
+tag gives you *pins that have photos*. On the working copy that is **70**, while
+the true photo count is **253**. Comparing the two numbers as if they measured
+the same thing will look like a loss that never happened.
+
 
 ## Adding new rows to a layer that already has pins
 
@@ -539,3 +560,60 @@ photo → trash icon beside the displayed photo.
   stack duplicate popups and corrupt the page.
 - A full single-location sync is roughly **55 browser round-trips** and
   **50–70 minutes**.
+
+## Icon verification — KML CANNOT DO THIS (found 2026-09-07)
+
+**Every placemark in the KML export reports the stock icon
+`503-wht-blank_maps.png` no matter what custom icon is actually applied.**
+
+This is the most dangerous inaccuracy found so far, because it fails *silently
+and confidently*: you get a clean, well-formed export that says all pins are on
+the default marker while the screen plainly shows custom icons. An agent
+trusting it will "fix" work that was never broken, or report a completed job as
+not done.
+
+KML remains reliable for names, coordinates, `<Data>` columns and
+`gx_media_links`. For ICON STATE it is useless.
+
+Verify icons instead by:
+  - the layer-panel row's icon `background-image` (its byte length fingerprints
+    each distinct icon), or
+  - a screenshot. For a whole-map check a screenshot is faster and more
+    honest than DOM archaeology — My Maps recycles marker elements, so a DOM
+    scan that worked a moment ago can return zero on the next call.
+
+## The paint-can does not need coordinate clicking
+
+Earlier guidance said to hover and `zoom` to land within ~9px. Not needed. The
+paint-can is `child[2]` of each layer-panel row
+(`.un1lmc-pbTTYe-ibnC6b-DyVDA`) and responds to synthetic events, as do
+"More icons", the icon tiles, and "OK". This removes coordinate drift and panel
+scrolling from the whole job.
+
+Note the CSS `:hover` limitation still stands for *revealing* hover-only
+controls — but the paint-can can be actioned directly without being revealed.
+
+## The custom-icon picker is SINGLE-SELECT
+
+Selecting several icons at once silently keeps only one ("1 selected"). The
+multi-select behaviour documented for the step-2 photo picker does NOT apply
+here. The failure is invisible — no error, no warning.
+
+Also: no Photos search is needed. Newly uploaded icons sit at the top of the
+grid, and the picker remembers the Photos tab, so a repeat import is 3 clicks.
+
+## Geometry-less placemarks are invisible in the layer panel
+
+A placemark with no `<Point>` (e.g. `<Placemark><name/></Placemark>`) does not
+appear in the layer list at all. It surfaces only in the DATA TABLE, announced
+by a "N rows couldn't be shown on the map" banner. Open the table through that
+banner, then right-click the row -> **Delete row**. The layer ⋮ menu offers no
+route to it.
+
+## KML caching — confirmed, and worse than documented
+
+Immediately after deleting a placemark, KML still reported the OLD counts
+(88 placemarks, TOILETS 20) despite BOTH `cache: 'reload'` AND a cache-buster
+query param, and caught up roughly a minute later. The DOM was correct
+instantly. "Trust the DOM for anything you just changed" is validated — treat
+it as a rule, not a precaution.

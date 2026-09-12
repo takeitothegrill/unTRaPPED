@@ -812,3 +812,27 @@ GPS in the CSV rather than relying on My Maps' photo-geolocation import**:
 
 This recommendation is not final — it depends on how Pass 2 and the URL-fallback test
 resolve.
+
+## Moving a pin BETWEEN LAYERS keeps its photo — VERIFIED by the user (2026-09-08)
+
+**Result: a pin dragged from one layer to another in the side panel KEEPS its
+attached photo.** Verified directly by the user.
+
+This matters because Path A (Photos-Albums import) always creates pins in a new
+"Imported Photos" layer, while the live map is organised into four typed layers
+(PARKING / TOILETS / PATHWAYS and ROUTES / VENUES and AMENITIES) on Individual
+styles. Every photo-imported pin therefore has to be moved into its typed layer,
+and photos are irreplaceable — so this was the one step that could have made the
+whole Path A route unusable on the restructured map. It does not.
+
+### Do not confuse this with the other "drag" finding
+
+Two different gestures, opposite results, easy to conflate:
+
+| gesture | where | result |
+|---|---|---|
+| drag a pin ROW between layers | side panel | **works, photo survives** (this entry) |
+| drag a pin to REPOSITION it | on the map | **not achievable from an automated session** — all three methods pan the map, coordinates unchanged |
+
+The second is why the lat/long override is unsupported in Path A and why a
+>~25 m disagreement with hero EXIF must be flagged to a human instead of fixed.
