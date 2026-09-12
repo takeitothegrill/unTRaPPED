@@ -12,7 +12,7 @@ because you personally could not reproduce it — add a dated note instead.
 | # | Fact | Verified by | When |
 |---|---|---|---|
 | 1 | Dragging a pin **between layers** in the side panel KEEPS its photo | user | 2026-09-08 |
-| 2 | Repositioning a pin **on the map** is impossible from an automated session — drag tool, hover-then-drag and synthetic mouse events all pan the map instead | agent, 3 methods | 2026-09-06 |
+| 2 | Three agent methods of repositioning a pin **on the map** — the drag tool on its own, hover-then-drag, and synthetic mouse events — all pan the map instead of moving the pin. A different gesture does move it: see #28 | agent, 3 methods | 2026-09-06 |
 | 3 | Photos-Albums import (layer → Import → **Albums** tab) creates pins at EXIF GPS with the photo attached natively | user, by hand | 2026-09-04 |
 | 4 | The layer Import dialog's **Drive tab shows only CSV/XLSX/KML**, and its **Upload button rejects images** | user, by hand | 2026-09-04 |
 | 5 | CSV merge adds metadata and **photos + styling survive it** — provided lat/lon columns are EXCLUDED | user, by hand | 2026-09-04 |
@@ -38,6 +38,8 @@ because you personally could not reproduce it — add a dated note instead.
 | 25 | Icon artwork is re-encoded to **128px** and renders at **18×18** at all zooms | agent | 2026-09-05 |
 | 26 | A **human** moves a pin like this: click **"Open in My Maps"** (if the map opened outside the editor), **double-click** the marker, **keep the mouse held down on the second click**, then drag | user | 2026-09-13 |
 | 27 | **My Maps takes 3–5 s to respond to a click.** Agent checks made ~3 s after a click raced the UI, so clicks that had registered were read as failures. Retrying them double-applied: v7 gained six empty layers. Fix: wait (5–8 s) before checking, and never repeat a click that looks dead until the wait is over | user spotted it; agent confirmed | 2026-09-06 |
+| 28 | **An agent CAN move a pin on the map.** Gesture: a rapid double-click on the marker with the second press held, then drag. It was done as `left_click` then `left_click_drag` from the same point in one `browser_batch`, in the visible tab, followed by an 8 s wait. On v5 the parking pin moved **50.4 m south, 0 m east** (target 50 m), and the map did not pan | agent (Claude in Chrome), at the human's direction | 2026-09-13 |
+| 29 | **A pin moved on the map keeps its photos:** 3 before and 3 after the #28 drag (KML `gx_media_links`, and the balloon's "1 of 3") | agent | 2026-09-13 |
 
 **Provenance of rows 3–6 and 8–11 (audited 13 Sep 2026 from session `3fd56563`).**
 Claude-in-Chrome failed on every call on 3 Sep ("Authorization failed", 23:24 AEST) and
@@ -57,18 +59,6 @@ Short list. Do not add to it speculatively.
   worth a click to confirm. **Go by behaviour:** the option that updates
   existing rows by matching a key, NOT the one that appends. Whoever opens that
   menu next: read the real label and settle line this.
-- **TO DO, next session: can an agent move a pin?**
-  - **The human's recollection (13 Sep):** it was tested and passed. They do not recall
-    when or where.
-  - **No record has been found.** Searched: this project's Claude Code transcripts, the
-    desktop and Cowork sessions (archived included), and Open Brain. Every record found
-    says an agent cannot (#2).
-  - **First, look for the record**, for example in Claude.ai chats or the Chrome sidebar.
-  - **If none turns up, run the test** on a throwaway map, registered first. Wait 5–8 s
-    between steps (#27) and try the human's double-click-and-hold gesture (#26).
-  - The three methods behind #2 (6 Sep, about 00:58 AEST) came before the lag lesson, and
-    none used that gesture.
-  - Until this is settled, do not cite #2 as final.
 
 ## Why this file exists
 

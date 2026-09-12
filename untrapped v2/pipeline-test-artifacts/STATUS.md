@@ -667,8 +667,8 @@ name and adding `location_id` as a column; editor 32px vs viewer 18px.
 - **"Drag the pin by hand" is impossible for the intended reader.** This is a
   runbook for an automated session and it told the agent to do something by
   hand. Three methods tried (drag tool, hover-then-drag, synthetic mouse
-  events) — **all pan the map**, pin coordinates unchanged. The lat/long
-  override is therefore genuinely unsupported, not merely undocumented. Runbook
+  events) — **all pan the map**, pin coordinates unchanged. None of the three
+  can apply the lat/long override. A fourth gesture can (VERIFIED #28, 13 Sep). Runbook
   now says: if the override differs from hero EXIF by >~25 m, **stop and flag
   for a human**; do not mark the row done.
 - **Duplicate `merge.csv` in Drive root.** Drive permits duplicate filenames, so
@@ -835,7 +835,33 @@ Two different gestures, opposite results, easy to conflate:
 | gesture | where | result |
 |---|---|---|
 | drag a pin ROW between layers | side panel | **works, photo survives** (this entry) |
-| drag a pin to REPOSITION it | on the map | **not achievable from an automated session** — all three methods pan the map, coordinates unchanged |
+| drag a pin to REPOSITION it | on the map | plain drags pan the map; **a rapid double-click with the second press held moves it, and the photos stay** (13 Sep, below) |
 
-The second is why the lat/long override is unsupported in Path A and why a
->~25 m disagreement with hero EXIF must be flagged to a human instead of fixed.
+The 6 Sep result for the second row is why a >~25 m disagreement with hero EXIF is
+flagged to a human instead of fixed. Whether that should change is OPEN (canon P9).
+
+## An agent CAN reposition a pin on the map — TESTED, PASSED (2026-09-13)
+
+Run at the human's direction on throwaway map v5 (`1xTLQzqrYdHsTqzgIu2Pdh7eAUmbs1lw`),
+via Claude-in-Chrome, in a visible tab at zoom 18.
+
+- **Gesture (the human's):** a rapid double-click on the marker with the second press
+  held, then drag. It was done as `left_click` on the marker followed at once by
+  `left_click_drag` from the same point, in one `browser_batch` so the two presses land
+  together. Then came an 8 s wait.
+- **Target:** 50 m south. At 0.548 m per CSS px that is ~91 CSS px. The viewport was
+  2304 CSS px wide and the screenshot 1568 px, so it came to 62 screenshot px.
+
+| | before | after |
+|---|---|---|
+| coordinates (KML) | -23.3508953, 150.5236404 | -23.3513484, 150.5236404 |
+| photos (KML `gx_media_links`) | 3 | 3 |
+
+- **Result:** the pin moved **50.4 m south and 0.0 m east**, and the map did not pan.
+  The balloon showed `-23.35134, 150.52364` and "1 of 3" at once. The KML matched about
+  a minute later.
+- **Why the 6 Sep attempts failed:** none of them used this gesture. They also came
+  before the lag lesson (VERIFIED #27).
+- **Recorded as:** VERIFIED #28 (an agent can move a pin) and #29 (a moved pin keeps its
+  photos). #29 also answers the worksheet's test T2.
+- **Side effect:** the v5 pin now sits 50 m from its true spot. v5 is a throwaway map.

@@ -33,8 +33,9 @@ Picking this up cold? Read `pipeline/RUNBOOK.md` first, then
 ## Decisions made
 
 - **On Path B (CSV import) the CSV is the source of truth for coordinates.**
-  Pins cannot be dragged from an automated session, so on a map built by CSV
-  import positions come from the CSV's lat/long — NOT from photo EXIF. On Path A
+  The 6 Sep reason was that no agent could drag a pin. One now can (VERIFIED
+  #28), so that reason is OPEN (canon P9). On a map built by CSV import,
+  positions come from the CSV's lat/long — NOT from photo EXIF. On Path A
   (Photos-Albums import, the only route to a native photo) the pin is placed
   from EXIF and the CSV coordinate does not reach the map. This is a change of
   approach.
@@ -87,7 +88,9 @@ them, which is a limitation of the tooling, not the product:
   layer ⋮ menu (only Rename / Delete / Open data table / Import / Reimport and
   merge / Export data) — you drag the layer header.
 - **Pins CAN be reordered within a layer.**
-- **Pins CANNOT be repositioned by an agent** — every drag method pans the map.
+- **Pin repositioning is the exception: an agent CAN do it** with a rapid
+  double-click whose second press is held and dragged (VERIFIED #28, 13 Sep).
+  The plain drag methods tried on 6 Sep pan the map.
 
 ## Public viewer vs editor — a real usability gap
 

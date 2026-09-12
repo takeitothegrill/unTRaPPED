@@ -338,23 +338,26 @@ lands. The script prints "using human-provided override position" whenever both
 cells are filled, including values it back-filled itself on an earlier run, so
 that message tells you nothing about the map.
 
-**Repositioning a pin is not currently achievable from an automated session.**
-Tested three ways (drag tool, hover-then-drag, synthetic mousedown/mousemove/
-mouseup on the marker) — all three **pan the map** and leave the pin's
-coordinates unchanged.
+**An agent CAN reposition a pin** (VERIFIED #28–#29, tested on v5, 13 Sep). The
+pin moved 50.4 m south and kept all 3 photos.
 
-**Not settled: the gesture a human uses** (VERIFIED #26, 13 Sep). Click "Open in
-My Maps", double-click the marker, keep the mouse held down on the second click,
-then drag.
-- None of the three methods above was that gesture, and all three came before
-  the lag lesson (VERIFIED #27).
-- The human recalls an agent drag later being tested and passing, but no record
-  of it has been found.
-- It is a to-do in `VERIFIED.md`.
+1. Work in the visible, active tab, in the editor (`/maps/d/edit`).
+2. Take a screenshot and locate the marker. Work out the offset: at zoom 18 near
+   Yeppoon, 1 CSS px ≈ 0.55 m. Convert CSS px to screenshot px with
+   `innerWidth / screenshot width`.
+3. In ONE `browser_batch`: `left_click` on the marker, then `left_click_drag`
+   from the same point to the target. That is the human's gesture, a rapid
+   double-click with the second press held. The two presses must land together.
+4. Wait 8 s. Read the balloon's live lat/long, then confirm with the KML a
+   minute later.
+
+**These do NOT move a pin; they pan the map** (6 Sep): `left_click_drag` on its
+own, hover-then-drag, and synthetic mousedown/mousemove/mouseup events.
 
 So: if the override differs from the hero photo's EXIF by **more than ~25 m**,
 **stop and flag it for a human**, rather than silently shipping a misplaced pin.
-Do not record the location as done.
+Do not record the location as done. (This rule was written when no agent could
+move a pin. Whether an agent should now move the pin itself is OPEN: canon P9.)
 
 ⚠ **Actually run this check, per location, and print the numbers.** On
 2026-09-06 an operator told a sync agent "the check is already done for all 5,

@@ -106,10 +106,12 @@ must be dragged into its correct layer in the side panel.
 2026-09-08.** You do not need to re-prove this or ask permission.
 
 Do not confuse that with repositioning a pin ON THE MAP, which is a different
-gesture and is **not achievable from an automated session** — drag tool,
-hover-then-drag and synthetic mouse events all just pan the map. That is why a
-lat/long override differing from hero EXIF by >~25 m must be flagged to the
-human rather than fixed.
+gesture.
+- An agent CAN do it, but only with a rapid double-click whose second press is
+  held and dragged (VERIFIED #28; the method is in RUNBOOK.md). Plain drags pan
+  the map.
+- The rule that a lat/long override differing from hero EXIF by >~25 m is flagged
+  to the human predates that finding. It stands until the human revisits it.
 
 The photo count is still your safety line either way: it should RISE as you
 attach photos and must never fall.
