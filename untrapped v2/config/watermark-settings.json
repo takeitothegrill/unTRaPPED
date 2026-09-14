@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "logo_path": "../branding/untrapped-logo.PNG",
+  "placement": "bottom-right",
+  "margin_pixels": 24,
+  "width_ratio": 0.60,
+  "opacity": 0.50,
+  "correct_orientation_before_watermark": true,
+  "preserve_aspect_ratio": true,
+  "date_stamp_enabled": false
+}
